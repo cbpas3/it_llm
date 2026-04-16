@@ -29,7 +29,7 @@ function App() {
       await win.setFocus();
 
       setStatus("thinking");
-      setInstruction("Analyzing…");
+      setInstruction("Analyzing… (first request may take up to 3 minutes while the server boots)");
 
       const nextStep = await llmService.getNextStep(screenshot);
 

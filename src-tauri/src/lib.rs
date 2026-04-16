@@ -25,7 +25,7 @@ fn capture_screen() -> Result<String, String> {
 }
 
 #[tauri::command]
-async fn get_next_step(image_base64: String, system_prompt: String, api_key: String) -> Result<String, String> {
+async fn get_next_step(image_base64: String, api_key: String) -> Result<String, String> {
     let url = format!(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key={}",
         api_key
@@ -33,7 +33,7 @@ async fn get_next_step(image_base64: String, system_prompt: String, api_key: Str
 
     let body = serde_json::json!({
         "systemInstruction": {
-            "parts": [{ "text": system_prompt }]
+            "parts": [{ "text": "You are an AI desktop assistant guiding the user to open Google Chrome and navigate to www.facebook.com.\n\nFIRST, carefully look at the screenshot and determine the current state:\n- If the browser address bar shows \"facebook.com\" or the page displays Facebook's logo/login screen → the task is DONE.\n- If Chrome is open but Facebook is not loaded yet → instruct the user to type the URL.\n- If Chrome is not open → instruct the user to open Chrome.\n\nIf the task is done, respond ONLY with: \"Task complete! Facebook is now open in Chrome.\"\nOtherwise, respond with ONE short, specific instruction for the very next action. No preamble, no explanation." }]
         },
         "contents": [{
             "role": "user",
@@ -52,15 +52,25 @@ async fn get_next_step(image_base64: String, system_prompt: String, api_key: Str
         }
     });
 
-    let client = reqwest::Client::new();
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(180))
+        .build()
+        .map_err(|e| e.to_string())?;
+
+    println!("[LLM] POST {}", url);
     let response = client
-        .post(&url)
+        .post(url)
         .json(&body)
         .send()
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e| format!("Request failed: {}", e))?;
 
-    let json: serde_json::Value = response.json().await.map_err(|e| e.to_string())?;
+    println!("[LLM] status: {}", response.status());
+
+    let json: serde_json::Value = response.json().await
+        .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    println!("[LLM] response: {}", json);
 
     let text = json["candidates"][0]["content"]["parts"][0]["text"]
         .as_str()
@@ -69,7 +79,7 @@ async fn get_next_step(image_base64: String, system_prompt: String, api_key: Str
         .to_string();
 
     if text.is_empty() {
-        Err(format!("Empty response from Gemini: {}", json))
+        Err(format!("Empty response: {}", json))
     } else {
         Ok(text)
     }
