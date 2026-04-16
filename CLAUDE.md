@@ -8,7 +8,7 @@ Tauri 2 + React + TypeScript floating overlay that captures the screen, sends it
 - **Frontend:** React 18, TypeScript, Vite
 - **Screen capture:** `xcap 0.9` crate (do NOT use 0.0.x — type inference bug on macOS)
 - **LLM client:** OpenAI npm SDK pointed at Ollama's OpenAI-compatible endpoint
-- **Default model:** `gemma4:e2b` via Ollama at `http://localhost:11434/v1`
+- **Default model:** `gemini-3.1-flash-lite-preview` via Google AI Studio
 
 ## File Map
 

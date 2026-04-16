@@ -15,24 +15,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  padding: 16px;
+  height: 100vh;
+  padding: 12px;
 }
 
 .assistant-card {
-  background: rgba(20, 20, 24, 0.92);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(20, 20, 24, 0.94);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  padding: 20px 24px;
-  width: 380px;
+  padding: 20px 22px 18px;
+  width: 100%;
   box-shadow:
-    0 32px 64px rgba(0, 0, 0, 0.5),
-    0 0 0 0.5px rgba(255, 255, 255, 0.04) inset;
+    0 24px 48px rgba(0, 0, 0, 0.6),
+    0 0 0 0.5px rgba(255, 255, 255, 0.05) inset;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .assistant-header {
@@ -42,76 +42,77 @@ body {
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #52e577;
+  background: #34c759;
   flex-shrink: 0;
   transition: background 0.3s ease;
 }
 
 .status-dot[data-status="capturing"],
 .status-dot[data-status="thinking"] {
-  background: #f0a500;
+  background: #ff9f0a;
   animation: pulse 1s ease-in-out infinite;
 }
 
 .status-dot[data-status="error"] {
-  background: #ff4d4d;
+  background: #ff453a;
 }
 
 .status-dot[data-status="done"] {
-  background: #52e577;
+  background: #34c759;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.35; }
 }
 
 .assistant-title {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.55);
-  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   flex: 1;
 }
 
 .step-badge {
   font-size: 11px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.35);
   background: rgba(255, 255, 255, 0.07);
   border-radius: 6px;
-  padding: 2px 8px;
-  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  letter-spacing: 0.03em;
 }
 
 .instruction-text {
   font-size: 15px;
-  font-weight: 450;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.88);
-  min-height: 48px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  flex: 1;
 }
 
 .analyze-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 14px;
   font-weight: 500;
   padding: 10px 16px;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+  transition: background 0.15s ease, transform 0.1s ease;
   letter-spacing: 0.01em;
   width: 100%;
+  margin-top: 4px;
 }
 
 .analyze-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .analyze-btn:active:not(:disabled) {
@@ -119,6 +120,6 @@ body {
 }
 
 .analyze-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }

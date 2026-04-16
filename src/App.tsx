@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { llmService } from "./services";
 import "./App.css";
 
@@ -7,37 +8,36 @@ type Status = "idle" | "capturing" | "thinking" | "done" | "error";
 
 function App() {
   const [instruction, setInstruction] = useState<string>(
-    "Click the button below to analyze your screen and get the next step."
+    "Click the button to analyze your screen and get the next step."
   );
   const [status, setStatus] = useState<Status>("idle");
   const [stepCount, setStepCount] = useState(0);
 
   const handleAnalyze = useCallback(async () => {
+    const win = getCurrentWindow();
     try {
-      // Countdown so the user can switch to the target window before capture
-      for (let i = 3; i >= 1; i--) {
-        setStatus("capturing");
-        setInstruction(`Capturing in ${i}…`);
-        await new Promise((r) => setTimeout(r, 1000));
-      }
-      setInstruction("Capturing your screen...");
+      setStatus("capturing");
+      setInstruction("Capturing…");
+
+      // Hide so the overlay doesn't appear in the screenshot
+      await win.hide();
+      await new Promise((r) => setTimeout(r, 150));
 
       const screenshot = await invoke<string>("capture_screen");
 
+      await win.show();
+      await win.setFocus();
+
       setStatus("thinking");
-      setInstruction("Analyzing screenshot...");
+      setInstruction("Analyzing…");
 
       const nextStep = await llmService.getNextStep(screenshot);
 
       setStepCount((n) => n + 1);
       setInstruction(nextStep);
-
-      if (nextStep.toLowerCase().includes("task complete")) {
-        setStatus("done");
-      } else {
-        setStatus("idle");
-      }
+      setStatus(nextStep.toLowerCase().includes("task complete") ? "done" : "idle");
     } catch (err) {
+      await win.show();
       setStatus("error");
       setInstruction(`Error: ${err instanceof Error ? err.message : String(err)}`);
     }
@@ -65,8 +65,8 @@ function App() {
         >
           {isLoading
             ? status === "capturing"
-              ? "Capturing..."
-              : "Thinking..."
+              ? "Capturing…"
+              : "Thinking…"
             : status === "done"
             ? "Analyze Again"
             : "Analyze Screen"}

@@ -1,2 +1,1 @@
-export { LLMService, llmService } from './llmService';
-export type { LLMConfig } from './llmService';
+export { llmService } from './llmService';
